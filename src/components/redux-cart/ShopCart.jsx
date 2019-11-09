@@ -35,7 +35,7 @@ class ShopCart extends Component {
     // 获取购物车中的数据
     componentDidMount() {
         // 监听仓库中的变化，并且重新给goodsList赋值
-        store.subscribe(() => {
+        this.unsubscribe = store.subscribe(() => {
           const storeGoodsList = store.getState()
             //  添加自定义属性key(antd中用到) 
           storeGoodsList.forEach(item => {
@@ -46,6 +46,12 @@ class ShopCart extends Component {
             goodsList: storeGoodsList
           })
         })
+    }
+
+    // 取消监听(解决subscribe 监听后的BUG)
+    componentWillUnmount () {
+        console.log('----unsubscribe-------')
+        this.unsubscribe()
     }
 
     // 删除

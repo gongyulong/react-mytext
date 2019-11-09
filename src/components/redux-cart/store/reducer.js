@@ -23,7 +23,7 @@ export default (state = goodsList, action) => {
                     // 新增
                     addGoodsList.push(action.payload)
                 }
-                // 必须返回
+                // 1.4 必须返回
                 return addGoodsList
 
         // 2.0 修改操作
@@ -44,7 +44,7 @@ export default (state = goodsList, action) => {
             const deleteGoodsList = [...state]
     
             // 3.2 根据传递过来的id，找到数组中的索引
-            const deleteIndex = deleteGoodsList.findIndex(item => item.id === action.payload.id)
+            const deleteIndex = deleteGoodsList.findIndex(item => item.id === action.payload)
             deleteGoodsList.splice(deleteIndex,1)
 
             // 3.3 必须返回

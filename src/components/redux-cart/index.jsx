@@ -38,7 +38,7 @@ class Index extends Component {
         this.calcTotalCount()
 
         // 监听仓库的变化
-        store.subscribe(() => {
+        this.unsubscribe = store.subscribe(() => {
             this.calcTotalCount()
         })
 
@@ -49,6 +49,10 @@ class Index extends Component {
         }
     }
 
+    // 取消监听
+    componentWillUnmount() {
+        this.unsubscribe()
+    }
     render(){
         return(
             <Router>
@@ -67,7 +71,7 @@ class Index extends Component {
                             <Route path='/GoodsList' component={ GoodsList }/>
                             <Route path='/ShopCart' component={ ShopCart }/>
 
-                            {/* 重点向 */}
+                            {/* 重定向 */}
                             <Redirect  exact to='/' from='/GoodsList' />
                         </Switch>
                     </div>
