@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 
-// 导入store
-import store from "./store"
+// 导入connect
+import {connect} from 'react-redux'
 
 // 导入修改方法
 import { updateGoods,asyncDeleteGoods } from './store/actionCreators'
@@ -13,48 +13,7 @@ const { confirm } = Modal
 
 
 class ShopCart extends Component {
-    constructor() {
-        super()
-        // 添加自定义属性key(antd中用到)
-        const storeGoodsList = store.getState()
-        storeGoodsList.forEach(item => {
-            item.key = item.id
-        })
-
-        this.state = {
-            // 初始化的时候给goodsList赋值
-            goodsList: storeGoodsList
-        }
-    }
-    // 更改商品的数量
-    changeNum = (id, num) => {
-        // console.log(id,num)
-        // 触发修改的action
-        store.dispatch(updateGoods({ id, num }))
-    }
-    // 获取购物车中的数据
-    componentDidMount() {
-        // 监听仓库中的变化，并且重新给goodsList赋值
-        this.unsubscribe = store.subscribe(() => {
-          const storeGoodsList = store.getState()
-            //  添加自定义属性key(antd中用到) 
-          storeGoodsList.forEach(item => {
-            item.key = item.id
-          })
-    
-          this.setState({
-            goodsList: storeGoodsList
-          })
-        })
-    }
-
-    // 取消监听(解决subscribe 监听后的BUG)
-    componentWillUnmount () {
-        console.log('----unsubscribe-------')
-        this.unsubscribe()
-    }
-
-    // 删除
+  // 删除
   deleteGoods = id => {
     confirm({
       title: '提示',
@@ -62,8 +21,7 @@ class ShopCart extends Component {
       okText:'确定',
       cancelText:'取消',
       onOk:() => {
-        // 触发异步的修改action
-        store.dispatch(asyncDeleteGoods(id))
+        this.props.deleteGoods(id)
       }
     })
   }
@@ -71,7 +29,7 @@ class ShopCart extends Component {
     render() {
         return (
             <div>
-                <Table dataSource={this.state.goodsList} pagination={false}>
+                <Table dataSource={this.props.goodsList} pagination={false}>
                     <Column title="名字" dataIndex="name" key="name" />
                     <Column
                         title="图片"
@@ -86,7 +44,7 @@ class ShopCart extends Component {
                         title="数量"
                         key="num"
                         render={({ id, num }) => {
-                            return <InputNumber min={1} defaultValue={num} onChange={data => this.changeNum(id, data)} />;
+                            return <InputNumber min={1} defaultValue={num} onChange={data => this.props.changeNum(id, data)} />;
                         }}
                     />
                     <Column title="单价" dataIndex="price" key="price" />
@@ -111,4 +69,43 @@ class ShopCart extends Component {
     }
 }
 
-export default ShopCart
+//  state 初始化及仓库中的值变化了都会执行
+const mapStateToProps = state => {
+
+    const generateKey = () => {
+      // 深拷贝
+      const oldState = JSON.parse(JSON.stringify(state))
+  
+     // 添加自定义属性key(antd 使用) 
+      oldState.forEach(item => {
+        item.key = item.id
+      })
+  
+      return oldState
+    }
+    // props
+    return {
+      goodsList: generateKey()
+    }
+}
+
+
+// mapStateToProps 获取值
+// mapDispatchToProps 修改值
+const mapDispatchToProps = dispatch => {
+    // props
+    return {
+      // 修改仓库的方法
+      changeNum:function(id,num){
+        // 触发action
+        dispatch(updateGoods({id,num}))
+      },
+      // 删除仓库的方法
+      deleteGoods: function(id){
+        // 触发action
+        dispatch(asyncDeleteGoods(id))
+      }
+    }
+  }
+
+  export default connect(mapStateToProps,mapDispatchToProps)(ShopCart)

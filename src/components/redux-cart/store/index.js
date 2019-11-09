@@ -11,6 +11,7 @@ const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 // 创建仓库，并且导出
 const store = createStore(reducer,composeEnhancers(applyMiddleware(thunk)))
 
+
 // 导出
 /**
  * store.dispatch 触发action

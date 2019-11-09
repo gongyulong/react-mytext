@@ -6,8 +6,8 @@ import Style from './GoodsList.module.css'
 // 导入antd
 import { Button } from 'antd'
 
-// 导入store
-import store from './store'
+// 导入connect
+import { connect } from 'react-redux'
 
 // 按需导入actionCreate文件中 新增 addGoods() 方法
 import { addGoods } from './store/actionCreators'
@@ -54,14 +54,7 @@ class GoodsList extends Component {
             ]
         }
     }
-    // 1.0 新增方法
-    add = item => {
-        // console.log(item) //测试
-
-        // 触发dispatch() --更改store (Redux工具调试)
-        store.dispatch(addGoods(item))
-        
-    }
+   
     render() {
         return (
             <div className={Style.container}>
@@ -71,7 +64,7 @@ class GoodsList extends Component {
                             <img className={Style.img} src={item.url} alt=""/>
                             <p>商品名：{item.name}</p>
                             <p>￥{item.price}</p>
-                            <Button onClick={() => this.add(item)} className={Style.btncar}>加入购物车</Button>
+                            <Button onClick={() => this.props.add(item)} className={Style.btncar}>加入购物车</Button>
                         </li>
                     })}
                 </ul>
@@ -82,4 +75,21 @@ class GoodsList extends Component {
     }
 }
 
-export default GoodsList
+
+// dispatch 就是之前的 store.dispatch
+const mapDispatchToProps = dispatch => {
+    // 这个返回的对象，就是传递给组件的props
+    return {
+      add: function(item){
+        dispatch(addGoods(item))
+      }
+    }
+  }
+
+// connect 的两个方法: 
+// 第一个方法就是获取值 
+// 第二个方法就是为了更改值
+export default connect(
+    null,
+    mapDispatchToProps
+  )(GoodsList);
